@@ -45,9 +45,11 @@ export function score(input: ThrowInput, res: SimResult, loadout: Loadout): Scor
   const base = 100 * skips + Math.round(10 * distance);
   const bonuses: BonusLine[] = [];
   const perfect = isPerfect(input, loadout);
-  if (perfect) bonuses.push({ label: '퍼펙트 각도', points: 200 });
-  if (Math.abs(input.direction) <= 3) bonuses.push({ label: '일자 투척', points: 100 });
-  if (input.stability >= 0.9) bonuses.push({ label: '흔들림 없는 자세', points: 100 });
+  // 기술 보너스는 한 번이라도 튕겼을 때만
+  const skipped = skips > 0;
+  if (perfect && skipped) bonuses.push({ label: '퍼펙트 각도', points: 200 });
+  if (skipped && Math.abs(input.direction) <= 3) bonuses.push({ label: '일자 투척', points: 100 });
+  if (skipped && input.stability >= 0.9) bonuses.push({ label: '흔들림 없는 자세', points: 100 });
   const skidAfterTen = skips >= 10 && res.bounces.slice(10).some((b) => b.skid);
   if (skidAfterTen) bonuses.push({ label: '물결 콤보', points: 300 });
   const placeMul = STAR_MULTIPLIER[loadout.place.stars] ?? 1;

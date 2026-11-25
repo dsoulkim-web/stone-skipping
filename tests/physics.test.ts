@@ -76,6 +76,13 @@ describe('score', () => {
     expect(s.total).toBe(Math.round(s.base + s.bonuses.reduce((a, b) => a + b.points, 0)));
   });
 
+  it('gives no technique bonus when the stone never skips', () => {
+    const l = loadout();
+    const r = simulate({ ...good, power: 0.1 }, l, 1);
+    expect(r.bounces.length).toBe(0);
+    expect(score({ ...good, power: 0.1 }, r, l).bonuses).toEqual([]);
+  });
+
   it('applies place stars multiplier', () => {
     const l = loadout({ place: byId(PLACES, 'easdale') });
     const s = score(good, simulate(good, l, 1), l);

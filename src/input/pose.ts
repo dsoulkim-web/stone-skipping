@@ -41,6 +41,8 @@ export class PoseTracker {
   private sim = { roll: 0, pitch: 0 };
 
   async start(): Promise<boolean> {
+    // 마우스 대체 입력은 권한과 상관없이 항상 켠다 (센서가 오면 자동으로 무시)
+    window.addEventListener('mousemove', this.onMouse);
     const DOE = (window as unknown as { DeviceOrientationEvent?: { requestPermission?: PermissionFn } }).DeviceOrientationEvent;
     const DME = (window as unknown as { DeviceMotionEvent?: { requestPermission?: PermissionFn } }).DeviceMotionEvent;
     try {
@@ -55,7 +57,6 @@ export class PoseTracker {
     }
     window.addEventListener('deviceorientation', this.onOrient);
     window.addEventListener('devicemotion', this.onMotion);
-    window.addEventListener('mousemove', this.onMouse);
     return true;
   }
 
@@ -76,6 +77,8 @@ export class PoseTracker {
 
   private onOrient = (e: DeviceOrientationEvent) => {
     if (e.beta == null || e.gamma == null) return;
+    // 데스크톱 브라우저는 값이 0인 가짜 이벤트를 보내기도 한다
+    if (!this.hasSensor && e.beta === 0 && e.gamma === 0) return;
     this.hasSensor = true;
     const now = performance.now();
     this.rawBeta = e.beta;
