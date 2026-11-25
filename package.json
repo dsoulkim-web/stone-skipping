@@ -1,0 +1,27 @@
+{
+  "name": "stone-skipping",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "cap:sync": "npm run build && cap sync"
+  },
+  "dependencies": {
+    "@capacitor/core": "^7.4.0",
+    "three": "^0.176.0"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^7.4.0",
+    "@capacitor/cli": "^7.4.0",
+    "@capacitor/ios": "^7.4.0",
+    "@types/three": "^0.176.0",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vitest": "^3.2.4"
+  }
+}
