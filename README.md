@@ -27,6 +27,11 @@ npm run build
 
 폰 브라우저의 모션 센서는 HTTPS에서만 동작한다. 개발 중에는 `npm run dev` 주소를 HTTPS 터널(예: cloudflared, ngrok)로 열거나 앱 빌드로 테스트한다. 데스크톱에서는 마우스 위치가 폰 자세를 대신하고, 드래그를 위로 튕기면 발사된다.
 
+## 폰으로 해보기
+
+main에 올라갈 때마다 GitHub Pages(HTTPS)에 자동 배포된다: https://dsoulkim-web.github.io/stone-skipping/
+처음 한 번은 저장소 Settings → Pages → Source를 **GitHub Actions**로 바꿔야 한다.
+
 ## 스토어 빌드 (Capacitor)
 
 ```bash
