@@ -19,8 +19,10 @@ interface Pt {
 export function computeFlick(points: Pt[], screenH: number, maxSpeed: number): FlickResult | null {
   if (points.length < 2) return null;
   const last = points[points.length - 1];
-  const window = points.filter((p) => last.t - p.t <= 100);
-  const first = window.length >= 2 ? window[0] : points[points.length - 2];
+  // 최근 100ms 구간. 이벤트가 드문 기기에서도 쓰도록 최소 3개 지점은 포함
+  let i = points.findIndex((p) => last.t - p.t <= 100);
+  i = Math.max(0, Math.min(i, points.length - 3));
+  const first = points[i];
   const dt = (last.t - first.t) / 1000;
   if (dt <= 0) return null;
   const dx = last.x - first.x;
@@ -36,7 +38,7 @@ export class FlickDetector {
   private pts: Pt[] = [];
   private active = false;
   /** 튜토리얼에서 잰 개인 최대 플릭 속도 (화면/초) */
-  maxSpeed = 6;
+  maxSpeed = 4;
   onStart?: () => void;
   onMove?: (x: number, y: number) => void;
   onFlick?: (r: FlickResult) => void;
