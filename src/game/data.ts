@@ -17,15 +17,15 @@ export interface Stone {
   id: string;
   name: string;
   desc: string;
-  /** 반발 계수 e: 튕길 때 수평 속도가 남는 비율 */
-  e: number;
-  /** 튕기는 데 필요한 최소 수평 속도(m/s) */
-  vMin: number;
-  /** 튕긴 뒤 다시 뜨는 정도 */
-  cy: number;
+  /** 질량(kg) */
+  mass: number;
+  /** 반지름(m) */
+  radius: number;
+  /** 물과의 마찰 계수 C_f (작을수록 속도를 덜 잃는다) */
+  friction: number;
   /** 바람 영향 배율 (가벼울수록 큼) */
   windFactor: number;
-  /** 튕길 때마다 스핀이 줄어드는 비율 */
+  /** 접촉할 때마다 스핀이 줄어드는 비율 */
   spinDecay: number;
   /** 허용 기울기 상한(°) */
   maxTilt: number;
@@ -80,11 +80,11 @@ export const CHARACTERS: Character[] = [
 ];
 
 export const STONES: Stone[] = [
-  { id: 'flat', name: '납작 조약돌', desc: '균형형 기본 돌', e: 0.9, vMin: 2.5, cy: 0.34, windFactor: 1, spinDecay: 0.1, maxTilt: 45, color: 0x9a948a },
-  { id: 'round', name: '둥근 자갈', desc: '기울기를 너그럽게 받아주는 연습용 돌', e: 0.84, vMin: 3.0, cy: 0.4, windFactor: 0.9, spinDecay: 0.1, maxTilt: 55, color: 0x7d7a74 },
-  { id: 'shale', name: '얇은 점판암', desc: '잘 튕기지만 바람에 약함', e: 0.93, vMin: 2.0, cy: 0.29, windFactor: 1.6, spinDecay: 0.12, maxTilt: 40, color: 0x4f5660 },
-  { id: 'basalt', name: '무거운 현무암', desc: '바람과 파도에 강하고 멀리 감', e: 0.88, vMin: 3.5, cy: 0.31, windFactor: 0.5, spinDecay: 0.08, maxTilt: 45, color: 0x2f2d2c },
-  { id: 'jade', name: '달빛 옥돌', desc: '스핀이 잘 줄지 않는 희귀한 돌', e: 0.94, vMin: 2.5, cy: 0.32, windFactor: 1, spinDecay: 0.05, maxTilt: 45, color: 0x6fb59a },
+  { id: 'flat', name: '납작 조약돌', desc: '균형형 기본 돌', mass: 0.1, radius: 0.045, friction: 0.03, windFactor: 1, spinDecay: 0.03, maxTilt: 45, color: 0x9a948a },
+  { id: 'round', name: '둥근 자갈', desc: '무겁고 두꺼워 기울기 실수에 너그러움', mass: 0.15, radius: 0.04, friction: 0.04, windFactor: 0.8, spinDecay: 0.03, maxTilt: 55, color: 0x7d7a74 },
+  { id: 'shale', name: '얇은 점판암', desc: '가볍고 넓어 잘 뜨지만 바람에 약함', mass: 0.07, radius: 0.05, friction: 0.03, windFactor: 1.6, spinDecay: 0.04, maxTilt: 40, color: 0x4f5660 },
+  { id: 'basalt', name: '무거운 현무암', desc: '바람과 물결에 강하지만 빨리 던져야 뜸', mass: 0.18, radius: 0.045, friction: 0.03, windFactor: 0.5, spinDecay: 0.025, maxTilt: 45, color: 0x2f2d2c },
+  { id: 'jade', name: '달빛 옥돌', desc: '매끈해 마찰이 적고 스핀이 오래감', mass: 0.1, radius: 0.045, friction: 0.02, windFactor: 1, spinDecay: 0.015, maxTilt: 45, color: 0x6fb59a },
 ];
 
 const m = (skips: number, streak: number, dist: number): Mission[] => [
@@ -97,42 +97,42 @@ const m = (skips: number, streak: number, dist: number): Mission[] => [
 export const PLACES: Place[] = [
   {
     id: 'donggang', country: '한국', name: '동강', kind: '강', desc: '자갈 강변과 절벽이 있는 잔잔한 여울',
-    stars: 1, wind: 0, waves: 0.05, targetRoll: 20, targetPitch: 10, masterSkips: 7, missions: m(5, 2, 15),
+    stars: 1, wind: 0, waves: 0.05, targetRoll: 20, targetPitch: 10, masterSkips: 12, missions: m(8, 2, 15),
     sky: { top: 0x5d9bd6, bottom: 0xcfe6f2, sun: 0xfff3d6 }, water: { deep: 0x1f5a6b, shallow: 0x4f9aa0 }, shore: 0xb9b2a4,
   },
   {
     id: 'hangang', country: '한국', name: '한강', kind: '강', desc: '도시 불빛이 비치는 밤의 강',
-    stars: 2, wind: 0.4, waves: 0.12, targetRoll: 20, targetPitch: 8, masterSkips: 8, missions: m(6, 2, 18),
+    stars: 2, wind: 0.4, waves: 0.12, targetRoll: 20, targetPitch: 8, masterSkips: 14, missions: m(9, 2, 17),
     sky: { top: 0x0b1530, bottom: 0x3a3f6b, sun: 0xffd9a0 }, water: { deep: 0x0a1626, shallow: 0x23324d }, shore: 0x55585e, night: true,
   },
   {
     id: 'shimanto', country: '일본', name: '시만토강', kind: '강', desc: '난간 없는 잠수교가 있는 맑은 강',
-    stars: 2, wind: -0.3, waves: 0.15, targetRoll: 18, targetPitch: 10, masterSkips: 9, missions: m(7, 3, 20),
+    stars: 2, wind: -0.3, waves: 0.15, targetRoll: 18, targetPitch: 10, masterSkips: 15, missions: m(10, 3, 18),
     sky: { top: 0x6aa8d8, bottom: 0xe2eef0, sun: 0xffffe8 }, water: { deep: 0x1d6b6a, shallow: 0x56b3a5 }, shore: 0xa8a090,
   },
   {
     id: 'easdale', country: '스코틀랜드', name: '이스데일 섬', kind: '채석장 연못', desc: '납작한 점판암과 거센 바닷바람',
-    stars: 4, wind: 1.4, waves: 0.3, targetRoll: 22, targetPitch: 8, masterSkips: 12, missions: m(10, 4, 25),
+    stars: 4, wind: 1.4, waves: 0.3, targetRoll: 22, targetPitch: 8, masterSkips: 18, missions: m(12, 4, 20),
     sky: { top: 0x6f7f8f, bottom: 0xc5ccd2, sun: 0xeef2f5 }, water: { deep: 0x24343d, shallow: 0x4a5f66 }, shore: 0x4c5158,
   },
   {
     id: 'mackinac', country: '미국', name: '매키낙 섬', kind: '호수', desc: '큰 호수의 맑은 잔물결',
-    stars: 3, wind: 0.6, waves: 0.2, targetRoll: 20, targetPitch: 9, masterSkips: 10, missions: m(8, 3, 22),
+    stars: 3, wind: 0.6, waves: 0.2, targetRoll: 20, targetPitch: 9, masterSkips: 16, missions: m(11, 3, 20),
     sky: { top: 0x4e8fd4, bottom: 0xd8ecf6, sun: 0xfff7e0 }, water: { deep: 0x1b4f7a, shallow: 0x3f8fb0 }, shore: 0xcbbfa6,
   },
   {
     id: 'moraine', country: '캐나다', name: '모레인 호수', kind: '빙하호', desc: '옥빛 물과 갑자기 부는 바람',
-    stars: 3, wind: -0.9, waves: 0.15, targetRoll: 21, targetPitch: 10, masterSkips: 11, missions: m(9, 3, 24),
+    stars: 3, wind: -0.9, waves: 0.15, targetRoll: 21, targetPitch: 10, masterSkips: 17, missions: m(12, 3, 21),
     sky: { top: 0x3f86cf, bottom: 0xdcefff, sun: 0xffffff }, water: { deep: 0x177a86, shallow: 0x3fc0c4 }, shore: 0x8f8a80,
   },
   {
     id: 'tekapo', country: '뉴질랜드', name: '테카포 호수', kind: '호수', desc: '별이 쏟아지는 밤의 호수',
-    stars: 4, wind: 0.8, waves: 0.2, targetRoll: 20, targetPitch: 7, masterSkips: 13, missions: m(11, 4, 27),
+    stars: 4, wind: 0.8, waves: 0.2, targetRoll: 20, targetPitch: 7, masterSkips: 19, missions: m(13, 4, 22),
     sky: { top: 0x050a1f, bottom: 0x1c2a55, sun: 0xcfd8ff }, water: { deep: 0x061024, shallow: 0x18305a }, shore: 0x3e3a45, night: true,
   },
   {
     id: 'brienz', country: '스위스', name: '브리엔츠 호수', kind: '호수', desc: '알프스 골바람이 수시로 바뀌는 최종 도장',
-    stars: 5, wind: -1.8, waves: 0.35, targetRoll: 23, targetPitch: 8, masterSkips: 14, missions: m(12, 5, 30),
+    stars: 5, wind: -1.8, waves: 0.35, targetRoll: 23, targetPitch: 8, masterSkips: 20, missions: m(14, 5, 22),
     sky: { top: 0x5d93c9, bottom: 0xe8f1f6, sun: 0xffffff }, water: { deep: 0x1a6a6f, shallow: 0x49a9a3 }, shore: 0x9a9384,
   },
 ];
