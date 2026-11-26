@@ -101,6 +101,13 @@ export class PoseTracker {
     this.pushRate(performance.now(), Math.hypot(rr.alpha ?? 0, rr.beta ?? 0, rr.gamma ?? 0));
   };
 
+  /** 센서를 못 쓰는 환경(웹앱 미리보기 등)에서 손가락으로 자세를 정한다 */
+  setManual(roll: number, pitch: number): void {
+    const r = Math.hypot(roll - this.sim.roll, pitch - this.sim.pitch) * 60;
+    this.sim = { roll, pitch };
+    this.pushRate(performance.now(), r);
+  }
+
   private onMouse = (e: MouseEvent) => {
     // 버튼을 누른 채 움직이는 건 플릭이므로 자세로 보지 않는다
     if (this.hasSensor || e.buttons !== 0) return;

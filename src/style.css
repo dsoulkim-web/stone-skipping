@@ -82,3 +82,5 @@ button:disabled { opacity: 0.4; }
 .no { color: var(--quiet); }
 .new { color: var(--gold); font-weight: 700; }
 .toggle { font-size: 14px; padding: 8px 12px; }
+.manual-hint { margin-top: 10px; font-size: 12px; padding: 0 24px; }
+.meter { touch-action: none; }
