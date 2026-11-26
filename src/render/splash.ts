@@ -133,25 +133,23 @@ export class Splash {
   /** 튕김 물보라. (dirX, dirZ) = 돌 진행 방향 단위벡터, speed = 접촉 속도, strength 0~1 */
   crown(x: number, z: number, dirX: number, dirZ: number, strength: number, perfect: boolean, speed = 6): void {
     const sideX = -dirZ, sideZ = dirX;
-    const count = Math.round(90 + 260 * strength + (perfect ? 180 : 0));
+    // 실제 고속 촬영: 돌 뒷가장자리에서 얇은 물 시트가 앞·옆으로 V자로 갈라져 튀고, 작은 물방울로 부서진다
+    const count = Math.round(25 + 140 * strength + (perfect ? 50 : 0));
     for (let k = 0; k < count; k++) {
       const side = Math.random() < 0.5 ? -1 : 1;
-      // V자 시트: 앞쪽으로 던져지며 양옆으로 벌어진다
-      const fwd = speed * (0.15 + Math.random() * 0.45);
-      const lat = (0.4 + Math.random() * 1.6) * (0.5 + strength) * side;
-      const up = (0.8 + Math.random() * 2.4) * (0.5 + strength * 0.9);
-      const back = Math.random() * 0.25;
+      const fwd = speed * (0.1 + Math.random() * 0.3);
+      const lat = (0.25 + Math.random() * 0.9) * (0.4 + strength * 0.6) * side;
+      const up = (0.3 + Math.random() * 1.2) * (0.35 + strength * 0.75);
+      const back = Math.random() * 0.12;
       this.drops.emit(
-        x - dirX * back + (Math.random() - 0.5) * 0.05, 0.01, z - dirZ * back + (Math.random() - 0.5) * 0.05,
+        x - dirX * back + (Math.random() - 0.5) * 0.03, 0.01, z - dirZ * back + (Math.random() - 0.5) * 0.03,
         dirX * fwd + sideX * lat, up, dirZ * fwd + sideZ * lat,
-        0.5 + Math.random() * 0.7,
-        0.008 + Math.pow(Math.random(), 4) * 0.045 + (perfect ? 0.006 : 0),
+        0.35 + Math.random() * 0.5,
+        0.005 + Math.pow(Math.random(), 5) * 0.025,
       );
     }
-    for (let k = 0; k < 10 + 20 * strength; k++) {
-      this.mist.emit(x + (Math.random() - 0.5) * 0.3, 0.1 + Math.random() * 0.2, z + (Math.random() - 0.5) * 0.3,
-        dirX * speed * 0.15 + (Math.random() - 0.5) * 0.6, 0.3 + Math.random() * 0.5, dirZ * speed * 0.15 + (Math.random() - 0.5) * 0.6,
-        0.9 + Math.random() * 0.8, 0.25 + Math.random() * 0.35);
+    for (let k = 0; k < 3 * strength; k++) {
+      this.mist.emit(x, 0.05, z, dirX * speed * 0.1, 0.2, dirZ * speed * 0.1, 0.6, 0.12 + Math.random() * 0.1);
     }
   }
 
@@ -164,17 +162,17 @@ export class Splash {
       this.drops.emit(x + Math.cos(a) * r, 0.02, z + Math.sin(a) * r, Math.cos(a) * out, 1.6 + Math.random() * 1.8, Math.sin(a) * out,
         0.7 + Math.random() * 0.5, 0.012 + Math.random() * 0.03);
     }
-    for (let k = 0; k < 520 * big; k++) {
+    for (let k = 0; k < 520 * big * big; k++) {
       const a = Math.random() * Math.PI * 2;
       const r = Math.random() * 0.07;
       const v = 3.5 + Math.random() * 3.8;
       this.drops.emit(x + Math.cos(a) * r, 0.02, z + Math.sin(a) * r, Math.cos(a) * r * 2, v, Math.sin(a) * r * 2,
         0.9 + Math.random() * 0.7, 0.015 + Math.random() * 0.04);
     }
-    for (let k = 0; k < 14; k++) {
+    for (let k = 0; k < 14 * big; k++) {
       this.drops.emit(x, 0.1, z, (Math.random() - 0.5) * 0.4, 6.8 + Math.random() * 1.2, (Math.random() - 0.5) * 0.4, 1.6, 0.05 + Math.random() * 0.03);
     }
-    for (let k = 0; k < 60; k++) {
+    for (let k = 0; k < 40 * big * big; k++) {
       this.mist.emit(x + (Math.random() - 0.5) * 0.4, 0.2 + Math.random() * 1.5, z + (Math.random() - 0.5) * 0.4,
         (Math.random() - 0.5) * 0.8, 0.4 + Math.random() * 0.8, (Math.random() - 0.5) * 0.8, 1.4 + Math.random(), 0.4 + Math.random() * 0.5);
     }

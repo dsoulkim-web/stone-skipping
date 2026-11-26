@@ -4,14 +4,10 @@ import type { Stone } from '../game/data';
 import { makeNoise } from './noise';
 import { stoneSurface } from './textures';
 
-/** 실제보다 약 2.5배 크게 보여준다 */
-const SIZE: Record<string, [number, number, number]> = {
-  flat: [0.14, 0.032, 0.11],
-  round: [0.12, 0.05, 0.11],
-  shale: [0.15, 0.022, 0.1],
-  basalt: [0.13, 0.04, 0.115],
-  jade: [0.13, 0.03, 0.1],
-};
+/** 두께 비율 (두께 반 / 반지름) */
+const THICK: Record<string, number> = { flat: 0.24, round: 0.38, shale: 0.15, basalt: 0.3, jade: 0.22 };
+/** 화면에서 잘 보이도록 실제보다 1.5배 크게 그린다 */
+const SHOW = 1.5;
 
 export function makeStoneMesh(stone: Stone): THREE.Mesh {
   const seed = [...stone.id].reduce((a, c) => a * 31 + c.charCodeAt(0), 7) >>> 0;
@@ -28,8 +24,8 @@ export function makeStoneMesh(stone: Stone): THREE.Mesh {
     v.y = Math.sign(v.y) * Math.pow(Math.abs(v.y), stone.id === 'round' ? 1.0 : 1.6) * (1 + n.fbm(v.x * 3, v.z * 3, 2) * 0.15);
     p.setXYZ(i, v.x, v.y, v.z);
   }
-  const s = SIZE[stone.id] ?? SIZE.flat;
-  geo.scale(s[0], s[1], s[2]);
+  const r = stone.radius * SHOW;
+  geo.scale(r, r * (THICK[stone.id] ?? 0.24), r * 0.86);
   geo.computeVertexNormals();
   const tx = stoneSurface(stone.color, seed, stone.id === 'jade' || stone.id === 'shale');
   const jade = stone.id === 'jade';

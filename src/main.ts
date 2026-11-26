@@ -148,7 +148,7 @@ function loadoutScreen() {
       <p class="${pp.stamp ? 'ok' : 'no'}">${pp.stamp ? '✓' : '·'} 관장 기록 ${place.masterSkips}회보다 많이 튕기기</p>
     </div>
     <h3>캐릭터</h3>${chips('character', CHARACTERS, (c) => `${c.desc}. 힘${c.str} 손목${c.snap} 정확${c.acc} 감각${c.feel}`)}
-    <h3>돌</h3>${chips('stone', STONES, (s) => `${s.desc}. 반발 ${s.e}`)}
+    <h3>돌</h3>${chips('stone', STONES, (s) => `${s.desc}. ${Math.round(s.mass * 1000)}g · 지름 ${Math.round(s.radius * 200)}cm`)}
     <h3>아이템</h3>${chips('item', ITEMS, (i) => i.desc)}
     <div class="bottom"><button id="back">지도</button><button class="primary" id="go">도전</button></div>
   </div>`);

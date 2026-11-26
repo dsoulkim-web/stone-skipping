@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { Reflector } from 'three/examples/jsm/objects/Reflector.js';
 import { SHORE_GLSL } from './scenery';
 
-export const MAX_RIPPLES = 32;
+export const MAX_RIPPLES = 48;
 
 const vert = /* glsl */ `
 uniform mat4 textureMatrix;
@@ -94,7 +94,7 @@ void main() {
     g += dir * sum * amp * 0.5;
     // 가운데 하얀 포말, 시간이 지나며 흩어진다
     float fn = vn(d * 9.0 + r.z * 13.0) * 0.6 + vn(d * 23.0) * 0.4;
-    foam += (1.0 - smoothstep(0.0, 0.35 + age * 0.35, dd)) * exp(-age * 1.6) * smoothstep(0.3, 0.7, fn) * r.w;
+    foam += (1.0 - smoothstep(0.0, 0.12 + age * 0.2, dd)) * 0.7 * exp(-age * 1.6) * smoothstep(0.3, 0.7, fn) * r.w;
     float e1 = (dd - age * 0.55) / (0.05 + age * 0.05);
     foam += exp(-e1 * e1) * exp(-age * 2.2) * 0.5 * fn * r.w;
   }

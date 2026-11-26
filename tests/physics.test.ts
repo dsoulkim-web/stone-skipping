@@ -89,3 +89,37 @@ describe('score', () => {
     expect(s.placeMul).toBe(1.7);
   });
 });
+
+describe('physics behaviour (Clanet·Bocquet model)', () => {
+  it('a 20° tilt skips more than a 40° tilt', () => {
+    const at = (tilt: number) => [1, 2, 3].reduce((a, sd) => a + simulate({ ...good, tilt }, loadout(), sd).bounces.length, 0);
+    expect(at(20)).toBeGreaterThan(at(40));
+  });
+
+  it('hops get shorter as the stone slows down', () => {
+    const r = simulate(good, loadout(), 4);
+    const gap = (i: number) => r.bounces[i + 1].pos[0] - r.bounces[i].pos[0];
+    expect(gap(1)).toBeGreaterThan(gap(6));
+    expect(r.bounces[0].speed).toBeGreaterThan(r.bounces[r.bounces.length - 1].speed);
+  });
+
+  it('the trailing edge dips a few millimetres into the water on each contact', () => {
+    const r = simulate(good, loadout(), 4);
+    for (const b of r.bounces.slice(0, 5)) {
+      expect(b.depth).toBeGreaterThan(0.001);
+      expect(b.depth).toBeLessThan(0.05);
+      expect(b.duration).toBeGreaterThan(0.002);
+    }
+  });
+
+  it('a heavy stone needs more speed than a light one', () => {
+    const slow = { ...good, power: 0.45 };
+    const sum = (id: string) => [1, 2, 3].reduce((a, sd) => a + simulate(slow, loadout({ stone: byId(STONES, id) }), sd).bounces.length, 0);
+    expect(sum('shale')).toBeGreaterThan(sum('basalt'));
+  });
+
+  it('choppy water ends throws sooner than calm water', () => {
+    const sum = (id: string) => [1, 2, 3, 4, 5, 6].reduce((a, sd) => a + simulate(good, loadout({ place: byId(PLACES, id) }), sd).bounces.length, 0);
+    expect(sum('donggang')).toBeGreaterThan(sum('brienz'));
+  });
+});
