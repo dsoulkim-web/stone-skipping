@@ -175,7 +175,7 @@ function aim() {
   let calibrated = !pose.hasSensor;
   const root = show(`<div class="hud" id="hud">
     <div class="topbar"><span>${esc(place.name)} · 관장 ${place.masterSkips}회</span><span id="exit" style="pointer-events:auto;padding:4px 8px">✕</span></div>
-    <div class="meter"><div class="cross"></div><div class="cross h"></div>
+    <div class="meter" id="meter"><div class="cross"></div><div class="cross h"></div>
       <div class="target" style="width:${win * 8}px;height:${win * 8}px"></div>
       <div class="target" style="width:${5 * 8 * 2}px;height:${5 * 8 * 2}px;border-width:1px;opacity:.5"></div>
       <div class="dot" id="dot"></div></div>
@@ -205,6 +205,38 @@ function aim() {
   let focus = 0;
   let last = performance.now();
   let current = { roll: 0, pitch: 0, stability: 1, accuracy: 0 };
+
+  // 센서가 없으면 조준 원을 손가락으로 끌어 자세를 정한다 (센서 대신)
+  const meter = document.getElementById('meter')!;
+  const manualHint = document.createElement('div');
+  manualHint.className = 'sub manual-hint';
+  manualHint.textContent = '센서를 쓸 수 없어 손가락 모드예요. 원 안을 끌어 노란 점을 맞추세요';
+  let dragging = false;
+  const dragTo = (e: PointerEvent) => {
+    const r = meter.getBoundingClientRect();
+    const dx = e.clientX - (r.left + r.width / 2);
+    const dy = e.clientY - (r.top + r.height / 2);
+    pose.setManual(place.targetRoll + dx / 8, place.targetPitch - dy / 8);
+  };
+  meter.addEventListener('pointerdown', (e) => {
+    if (pose.hasSensor) return;
+    e.stopPropagation();
+    dragging = true;
+    meter.setPointerCapture?.(e.pointerId);
+    dragTo(e);
+  });
+  meter.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    e.stopPropagation();
+    dragTo(e);
+  });
+  const endDrag = (e: PointerEvent) => {
+    if (!dragging) return;
+    e.stopPropagation();
+    dragging = false;
+  };
+  meter.addEventListener('pointerup', endDrag);
+  meter.addEventListener('pointercancel', endDrag);
 
   const flick = new FlickDetector(root);
   flick.onFlick = (f) => {
@@ -261,6 +293,8 @@ function aim() {
     stabV.textContent = `${Math.round(s.stability * 100)}%`;
     focusEl.style.width = `${focus * 100}%`;
     scene.aimPose(s.roll, s.pitch);
+    if (!pose.hasSensor && !manualHint.isConnected) document.querySelector('.readout')?.appendChild(manualHint);
+    if (pose.hasSensor && manualHint.isConnected) manualHint.remove();
     rafId = requestAnimationFrame(tick);
   };
   rafId = requestAnimationFrame(tick);

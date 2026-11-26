@@ -9,7 +9,8 @@
     "preview": "vite preview --host",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "cap:sync": "npm run build && cap sync"
+    "cap:sync": "npm run build && cap sync",
+    "build:webapp": "npm run build && node scripts/build-webapp.mjs"
   },
   "dependencies": {
     "@capacitor/core": "^7.4.0",
